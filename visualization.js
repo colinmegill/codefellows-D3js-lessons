@@ -1,12 +1,16 @@
 var dataset = [];                         //Initialize empty array
 for (var i = 0; i < 25; i++) {            //Loop 25 times
-    var newNumber = Math.floor(Math.random() * 20);   //New random number (0-30)
+    var newNumber = Math.floor(Math.random() * 30);   //New random number (0-30)
     dataset.push(newNumber);              //Add new number to array
 }
 
 //define width and height
 var w = 1000;
 var h = 200;
+
+var rScale = d3.scale.linear()
+                     .domain([0, d3.max(dataset, function(d) { return d; })])
+                     .range([0, h/8]);
 
 //First, we need to create the SVG element in which to place all our shapes:
 var svg = d3.select("body")
@@ -20,7 +24,7 @@ svg.selectAll("circle")
 		.enter()
 		.append("circle")
 		.attr("r", function(d, i){
-			return d;
+			return rScale(d);
 		})
 		.attr("cy", function(d, i){
 			return h/2;
@@ -28,11 +32,8 @@ svg.selectAll("circle")
 		.attr("cx", function(d, i){
 			return (i * 50) + 25;
 		})
-		.attr("fill", "yellow")
-		.attr("stroke", "orange")
-		.attr("stroke-width", function(d, i){
-			return d/4;
-		})
+		.attr("fill", "blue")
+
 
 
 
