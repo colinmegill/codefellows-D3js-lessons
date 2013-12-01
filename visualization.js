@@ -46,7 +46,10 @@ svg.selectAll("circle")
 
 //axis
 svg.append("g")
+		.attr("class", "axis")
 		.call(xAxis)
+
+		
 
 
 
