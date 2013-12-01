@@ -1,6 +1,6 @@
 var dataset = [];                         //Initialize empty array
 for (var i = 0; i < 400; i++) {            //Loop 25 times
-    var newNumber = Math.random() * 90;   //New random number (0-30)
+    var newNumber = Math.random() * 600;   //New random number (0-30)
     dataset.push(newNumber);              //Add new number to array
 }
 
@@ -15,6 +15,11 @@ var rScale = d3.scale.linear()
 var xScale = d3.scale.linear()
 											.domain([0, d3.max(dataset, function(d){ return d; })])
 											.range([0, w-40]);
+
+var xAxis = d3.svg.axis()
+									.scale(xScale)
+									.orient("bottom")
+
 
 //First, we need to create the SVG element in which to place all our shapes:
 var svg = d3.select("body")
@@ -39,6 +44,9 @@ svg.selectAll("circle")
 		.attr("stroke", "blue")
 		.attr("fill", "none")
 
+//axis
+svg.append("g")
+		.call(xAxis)
 
 
 
