@@ -1,8 +1,28 @@
-var dataset = [];                         //Initialize empty array
-for (var i = 0; i < 25; i++) {            //Loop 25 times
-    var newNumber = Math.floor(Math.random() * 20);   //New random number (0-30)
-    dataset.push(newNumber);              //Add new number to array
+
+//http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:("The New York Times")&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882
+
+
+var keywordsArray = []
+
+for (ii=0; ii<10; ii++) {
+
+	$.ajax({
+		url: "http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:(%22The%20New%20York%20Times%22)&page="+ii+"&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882"
+	}).done(function(data){ 
+		data.response.docs.forEach(function(doc){
+			doc.keywords.forEach(function(keyword){
+				keywordsArray.push(keyword.value)
+			})
+		})
+		console.dir(data)
+	})
+
 }
+
+
+
+
+
 
 //define width and height
 var w = 1000;
