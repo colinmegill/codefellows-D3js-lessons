@@ -1,6 +1,7 @@
 //http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:("The New York Times")&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882
 
 var storiesToRequest = 10;
+var requestsPromises = []
 var keywordsArray = [];
 var templateVectorMap = {};
 var trainingData = [];
@@ -8,10 +9,15 @@ var coordinates = []; //array of arrays for d3 to scatterplot...
 
 
 for (ii=0; ii < storiesToRequest; ii++) {
-	$.ajax({
-		url: "http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:(%22The%20New%20York%20Times%22)&page="+ii+"&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882"
-	}).done(initializeNeuralNetwork)
+	requestsPromises.push(
+		$.ajax({
+			url: "http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:(%22The%20New%20York%20Times%22)&page="+ii+"&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882"
+		})
+	)
 }
+
+$.when.apply($, requestsPromises).then(initializeNeuralNetwork)
+
 
 function addToMasterKeywordsArray (doc) {
 
