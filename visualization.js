@@ -1,6 +1,11 @@
 //http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:("The New York Times")&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882
 
 var storiesToRequest = 10;
+var keywordsArray = [];
+var templateVectorMap = {};
+var trainingData = [];
+var coordinates = []; //array of arrays for d3 to scatterplot...
+
 
 for (ii=0; ii < storiesToRequest; ii++) {
 	$.ajax({
@@ -34,27 +39,22 @@ function createTemplateVectorMap (keywordsArray) {
 
 function vectorizeStory (doc) {
 
-	//we push arrays onto the trainingData array
-	var vector = []
+	var vector = [] //we push arrays onto the trainingData array
 
-	doc.keywords.forEach(function(keyword){
-	
+	_.each(templateVectorMap, function(){
+		vector.push(0)
+	}) //push a zero onto vector for each key
 
-		trainingData.push(vector)
-	})
+	_.each(doc.keywords, function(keyword){
+		var indexPos = templateVectorMap[keyword]
+		vector[indexPos]
+	}) //get the position in templateVectorMap and set that position in the vector to 1 
 
+	trainingData.push(vector)
 
 }
 
-
-
-
 function processDocs (data) {
-
-	var keywordsArray = [];
-	var templateVectorMap = {};
-	var trainingData = [];
-
 
 	//let's see what we get back...
 	console.dir(data)
@@ -69,11 +69,10 @@ function processDocs (data) {
 	//turn keyword list into vector ['iran', 'israel'] => [0, 1] etc.
 	data.response.docs.forEach(vectorizeStory)
 
-	return {
-		templateVectorMap: templateVectorMap,
-		trainingData: trainingData
-	}
+}
 
+function makeCoordinates (vector) {
+	
 }
 
 
@@ -84,10 +83,10 @@ function initializeNeuralNetwork (data) {
 		hiddenLayers: [2]
 	})
 
-	neuralNetwork.train(nytimes.trainingData);
+	neuralNetwork.train(trainingData);
+	makecoordinates() 	//must ask mike... believe neuralnetwork.js line 33
 
-	var coordinates = [] //array of arrays for d3 to scatterplot...
-	//must ask mike... believe neuralnetwork.js line 33
+	visualization(coordinates);
 
 }
 
@@ -95,11 +94,11 @@ function initializeNeuralNetwork (data) {
 
 //DONE sort keywords array
 //DONE uniq sorted array
-// de facto at which position each keyword belongs... index 50 is 'iran'... each time take in a story... 
-// when want to make [1,0]... make an empty vector full of zeros... make a map out of it too... 
+//DONE de facto at which position each keyword belongs... index 50 is 'iran'... each time take in a story... 
+//DONE when want to make [1,0]... make an empty vector full of zeros... make a map out of it too... 
 //DONE make an object that would be a map... keywords[currentWord] = indexposition
 //DONE index of 1s and 0s... 
-// when training... pass in... array of vectors that am creating... training case is the classifcation value
+//DONE when training... pass in... array of vectors that am creating... training case is the classifcation value
 // when classifcation ... ... vector is the target vector... array of those 
 // transform vectors into format that they want - just so happens that the input and output are the same 
 // after i've trained it, go through them one at a time and check the hidden layer. 
@@ -107,20 +106,7 @@ function initializeNeuralNetwork (data) {
 
 
 
-
-
-var dataset = [
-                  [ 5,     20 ],
-                  [ 480,   90 ],
-                  [ 250,   50 ],
-                  [ 100,   33 ],
-                  [ 330,   95 ],
-                  [ 410,   12 ],
-                  [ 475,   44 ],
-                  [ 25,    67 ],
-                  [ 85,    21 ],
-                  [ 220,   88 ]
-              ];
+function visualization (dataset){
 
 //define width and height
 var w = 1000;
@@ -171,8 +157,7 @@ svg.selectAll("text")
   		"text-anchor": "middle"
   	})
 
-
-
+}
 
 
 
