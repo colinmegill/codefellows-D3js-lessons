@@ -5,7 +5,7 @@ var requestsPromises = [];
 var keywordsArray = [];
 var uniqueKeywordsArray;
 var templateVectorMap = {};
-var trainingData = [];
+var featureVectorsRaw = [];
 var coordinates = []; //array of arrays for d3 to scatterplot...
 
 
@@ -60,10 +60,10 @@ function vectorizeStory (doc) {
 
 	_.each(doc.keywords, function(keyword){
 		var indexPos = templateVectorMap[keyword]
-		vector[indexPos]
+		vector[indexPos] = 1;
 	}) //get the position in templateVectorMap and set that position in the vector to 1 
 
-	trainingData.push(vector)
+	featureVectorsRaw.push(vector)
 
 }
 
@@ -89,20 +89,28 @@ function processDocs (data) {
 	//turn keyword list into vector ['iran', 'israel'] => [0, 1] etc.
 	data.forEach(vectorizeStory)
 
+	//transmute arrays into [{input: array, output: array}]
+	var finalTrainingData = _.map(featureVectorsRaw, function(vector){
+		return {input: vector, output: vector} // because it's an autoencoder, input and output are the same.
+	})																			 // we are instead interested in the hidden layer
+
+	return finalTrainingData;
+
 }
 
 function initializeNeuralNetwork (data) {
 
 	var nytimes = processDocs(data)
+
 	var neuralNetwork = new brain.NeuralNetwork({
 		hiddenLayers: [2]
 	})
 
 	console.dir(neuralNetwork)
 
-	neuralNetwork.train(trainingData);
+	neuralNetwork.train(nytimes);
 
-
+	var coordinates = 
 
 	//visualization(coordinates);
 
