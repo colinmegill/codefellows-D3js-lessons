@@ -71,11 +71,6 @@ function processDocs (data) {
 
 }
 
-function makeCoordinates (vector) {
-	
-}
-
-
 function initializeNeuralNetwork (data) {
 
 	var nytimes = processDocs(data)
@@ -84,9 +79,10 @@ function initializeNeuralNetwork (data) {
 	})
 
 	neuralNetwork.train(trainingData);
-	makecoordinates() 	//must ask mike... believe neuralnetwork.js line 33
 
-	visualization(coordinates);
+
+
+	//visualization(coordinates);
 
 }
 
