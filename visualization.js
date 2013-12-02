@@ -1,8 +1,9 @@
 //http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:("The New York Times")&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882
 
 var storiesToRequest = 10;
-var requestsPromises = []
+var requestsPromises = [];
 var keywordsArray = [];
+var uniqueKeywordsArray;
 var templateVectorMap = {};
 var trainingData = [];
 var coordinates = []; //array of arrays for d3 to scatterplot...
@@ -16,34 +17,40 @@ for (ii=0; ii < storiesToRequest; ii++) {
 	)
 }
 
-$.when.apply($, requestsPromises).then(initializeNeuralNetwork)
+$.when.apply($, requestsPromises).then(function() { 
 
+	var arrayOfResponseObjects = []
+
+	_.each(arguments, function(arg){
+		arrayOfResponseObjects.push(arg[0].response.docs)
+	});
+
+	var nyt = _.flatten(arrayOfResponseObjects)
+
+	initializeNeuralNetwork(nyt)
+
+})
 
 function addToMasterKeywordsArray (doc) {
-
-	console.log('adding keys to master list...')
 
 	doc.keywords.forEach(function(keyword){
 		keywordsArray.push(keyword.value)
 	})
 
-	console.log('the master list now has ' + keywordsArray.length + ' elements in it.')
-
 }
 
-function createTemplateVectorMap (keywordsArray) {
-	
-	console.log('creating templateVectorMap...')
+function createTemplateVectorMap () {
 
-	_.each(keywordsArray, function(keyword, indexposition){
+	_.each(uniqueKeywordsArray, function(keyword, indexposition){
+		console.log('the keyword is: ' + keyword + 'and the index is ' + indexposition)
 		templateVectorMap[keyword] = indexposition;
 	})
-
-	console.dir('created templateVectorMap: ' + templateVectorMap)
 
 }
 
 function vectorizeStory (doc) {
+
+	console.log('creating a vector of [...0,0,0,0,1,0,0,1,0...] for each story based on which keywords for a given story appear in the master list...')
 
 	var vector = [] //we push arrays onto the trainingData array
 
@@ -63,17 +70,24 @@ function vectorizeStory (doc) {
 function processDocs (data) {
 
 	//let's see what we get back...
+	console.log('processing response data')
 	console.dir(data)
 
 	//for each times story we get back... add each story's keywords to the master array
-	data.response.docs.forEach(addToMasterKeywordsArray)
+	data.forEach(addToMasterKeywordsArray)
+	console.log('the raw master keyword list now has ' + keywordsArray.length + ' elements in it.')
 
 	//sort and unique, faster algo if sorted and we are sorting it, so pass true
 	//produce template vector
-	createTemplateVectorMap(_.uniq(keywordsArray.sort(), true))
+	uniqueKeywordsArray = _.uniq(keywordsArray.sort(), true)
+	console.log('the uniqd master keyword list now has ' + uniqueKeywordsArray.length + ' elements in it.')
+
+
+	createTemplateVectorMap();
+	console.dir(templateVectorMap)
 
 	//turn keyword list into vector ['iran', 'israel'] => [0, 1] etc.
-	data.response.docs.forEach(vectorizeStory)
+	data.forEach(vectorizeStory)
 
 }
 
@@ -83,6 +97,8 @@ function initializeNeuralNetwork (data) {
 	var neuralNetwork = new brain.NeuralNetwork({
 		hiddenLayers: [2]
 	})
+
+	console.dir(neuralNetwork)
 
 	neuralNetwork.train(trainingData);
 
