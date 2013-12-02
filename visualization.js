@@ -126,6 +126,15 @@ var dataset = [
 var w = 1000;
 var h = 400;
 
+//define scales
+var rScale = d3.scale.linear()
+                     .domain([0, d3.max(dataset, function(d) { return d; })])
+                     .range([0, h/8]);
+
+var xScale = d3.scale.linear()
+											.domain([0, d3.max(dataset, function(d){ return d; })])
+											.range([0, w-40]);
+
 //First, we need to create the SVG element in which to place all our shapes:
 var svg = d3.select("body")
 						.append("svg")
