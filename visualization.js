@@ -42,7 +42,6 @@ function addToMasterKeywordsArray (doc) {
 function createTemplateVectorMap () {
 
 	_.each(uniqueKeywordsArray, function(keyword, indexposition){
-		console.log('the keyword is: ' + keyword + 'and the index is ' + indexposition)
 		templateVectorMap[keyword] = indexposition;
 	})
 
@@ -50,16 +49,15 @@ function createTemplateVectorMap () {
 
 function vectorizeStory (doc) {
 
-	console.log('creating a vector of [...0,0,0,0,1,0,0,1,0...] for each story based on which keywords for a given story appear in the master list...')
-
 	var vector = [] //we push arrays onto the trainingData array
 
 	_.each(templateVectorMap, function(){
 		vector.push(0)
 	}) //push a zero onto vector for each key
 
-	_.each(doc.keywords, function(keyword){
-		var indexPos = templateVectorMap[keyword]
+
+	_.each(doc.keywords, function(keywordObj){
+		var indexPos = templateVectorMap[keywordObj.value]
 		vector[indexPos] = 1;
 	}) //get the position in templateVectorMap and set that position in the vector to 1 
 
@@ -70,7 +68,7 @@ function vectorizeStory (doc) {
 function processDocs (data) {
 
 	//let's see what we get back...
-	console.log('processing response data')
+	console.log('- - - - - - - - - - processing response data - - - - - - - - - - ')
 	console.dir(data)
 
 	//for each times story we get back... add each story's keywords to the master array
@@ -84,6 +82,7 @@ function processDocs (data) {
 
 
 	createTemplateVectorMap();
+	console.log('- - - - - - - - - - index position of keywords map - - - - - - - - - - ')
 	console.dir(templateVectorMap)
 
 	//turn keyword list into vector ['iran', 'israel'] => [0, 1] etc.
@@ -102,15 +101,30 @@ function initializeNeuralNetwork (data) {
 
 	var nytimes = processDocs(data)
 
-	var neuralNetwork = new brain.NeuralNetwork({
+	window.neuralNetwork = new brain.NeuralNetwork({
 		hiddenLayers: [2]
 	})
 
+	console.log('- - - - - - - - - - neural network  - - - - - - - - - -')
 	console.dir(neuralNetwork)
+	console.log('- - - - - - - - - - feature vectors - - - - - - - - - -')
+	console.dir(nytimes)
+	console.log('- - - - - - - - - - commencing training - - - - - - - -')
+	neuralNetwork.train(nytimes, {
+		errorThresh: 0.004,
+		learningRate: 0.3,
+		iterations: 10000,
+		log: true,
+		logPeriod: 100
+	});
 
-	neuralNetwork.train(nytimes);
+	console.log('- - - - - - - - - - training complete, running real data - - - - - - - - - - -')
 
-	var coordinates = 
+	
+
+
+
+	// var coordinates
 
 	//visualization(coordinates);
 
