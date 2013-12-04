@@ -113,26 +113,34 @@ function initializeNeuralNetwork (data) {
 	neuralNetwork.train(nytimes, {
 		errorThresh: 0.004,
 		learningRate: 0.3,
-		iterations: 1000,
+		iterations: 10001,
 		log: true,
 		logPeriod: 1000
 	});
 
 	console.log('- - - - - - - - - - training complete, running real data - - - - - - - - - - -')
 
-	var runData = []
+	var runDataSigmoid = []
+	var runDataLinear = []
 
 	_.each(featureVectorsRaw, function(storyAsVector, i){
 			run = neuralNetwork.run(storyAsVector)
-			runData.push(neuralNetwork.outputs[1].slice(0)) // this line... ask colin.
+			runDataSigmoid.push(neuralNetwork.outputs[1].slice(0)) // this line... ask colin.
 	})
+
+	_.each(featureVectorsRaw, function(storyAsVector, i){
+			runLinear = neuralNetwork.runLinear(storyAsVector)
+			runDataLinear.push(neuralNetwork.outputs[1].slice(0)) // this line... ask colin.
+	})
+
 	console.log('The run was successful. Here are the values of the hidden layer for each run: ')
-	console.dir(runData)
+	console.dir(runDataSigmoid)
+	console.dir(runDataLinear)
 
 	console.log('- - - - - - - - - - adding article data for d3 hover effects - - - - - - - - - - -')
 
 
-	visualization(runData);
+	visualization(runDataLinear);
 
 }
 

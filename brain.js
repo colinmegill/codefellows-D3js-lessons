@@ -67,11 +67,43 @@ NeuralNetwork.prototype = {
         for (var k = 0; k < weights.length; k++) {
           sum += weights[k] * input[k];
         }
-        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum));
+        this.outputs[layer][node] = 1 / (1 + Math.exp(-sum)); //approaches 1/1 as the sum increases
+      }                                                       //0.25 * sum + 0.5
+                                                              //activationFunction(sum)
+                                                              //track down all calls of run input
+      var output = input = this.outputs[layer];
+    }
+    return output;
+  },
+
+  runInputLinear: function(input) {
+    this.outputs[0] = input;  // set output state of input layer
+
+    for (var layer = 1; layer <= this.outputLayer; layer++) {
+      for (var node = 0; node < this.sizes[layer]; node++) {
+        var weights = this.weights[layer][node];
+
+        var sum = this.biases[layer][node];
+        for (var k = 0; k < weights.length; k++) {
+          sum += weights[k] * input[k];
+        }
+        this.outputs[layer][node] = 0.25 * sum + 0.5;
       }
       var output = input = this.outputs[layer];
     }
     return output;
+  },
+  runLinear: function(input) {
+    if (this.inputLookup) {
+      input = lookup.toArray(this.inputLookup, input);
+    }
+
+    var linearOutput = this.runInputLinear(input);
+
+    if (this.outputLookup) {
+      output = lookup.toHash(this.outputLookup, output);
+    }
+    return linearOutput;
   },
 
   train: function(data, options) {
