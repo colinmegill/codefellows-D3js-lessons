@@ -8,16 +8,28 @@ var templateVectorMap = {};
 var featureVectorsRaw = [];
 var coordinates = []; //array of arrays for d3 to scatterplot...
 
+$(document).ready(function(){
+	$('#timesApiSearch').submit(function(e){
+		event.preventDefault();
+					console.log('ready')
 
-for (ii=0; ii < pagesOfStoriesToRequest; ii++) {
-	requestsPromises.push(
-		$.ajax({
-			url: "http://api.nytimes.com/svc/search/v2/articlesearch.json?q=israel+iran&fq=source:(%22The%20New%20York%20Times%22)&page="+ii+"&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882"
-		})
-	)
-}
+		var rawUserInput = $('#timesApiSearchInput').val()
+		$('#timesApiSearchInput').val('')
+		var whiteSpaceToPlus = rawUserInput.replace(/ /g, '+');
+		makeAPIcall(whiteSpaceToPlus)
+	})
+})
 
-$.when.apply($, requestsPromises).then(function() { 
+function makeAPIcall(searchKeys){
+	for (ii=0; ii < pagesOfStoriesToRequest; ii++) {
+		requestsPromises.push(
+			$.ajax({
+				url: "http://api.nytimes.com/svc/search/v2/articlesearch.json?q="+searchKeys+"&fq=source:(%22The%20New%20York%20Times%22)&page="+ii+"&api-key=f25c99da2f24daefca165f7a452d05ec:1:35029882"
+			})
+		)
+	}
+
+	$.when.apply($, requestsPromises).then(function() { 
 
 	var arrayOfResponseObjects = []
 
@@ -29,7 +41,12 @@ $.when.apply($, requestsPromises).then(function() {
 
 	initializeNeuralNetwork(nyt)
 
-})
+	})
+
+
+}
+
+
 
 function addToMasterKeywordsArray (doc) {
 
@@ -70,6 +87,7 @@ function processDocs (data) {
 	//let's see what we get back...
 	console.log('- - - - - - - - - - processing response data - - - - - - - - - - ')
 	console.dir(data)
+	window.allResponses = data;
 
 	//for each times story we get back... add each story's keywords to the master array
 	data.forEach(addToMasterKeywordsArray)
@@ -113,7 +131,7 @@ function initializeNeuralNetwork (data) {
 	neuralNetwork.train(nytimes, {
 		errorThresh: 0.004,
 		learningRate: 0.3,
-		iterations: 10001,
+		iterations: 4001,
 		log: true,
 		logPeriod: 1000
 	});
@@ -163,8 +181,8 @@ function initializeNeuralNetwork (data) {
 function visualization (dataset){
 
 //define width and height
-var w = 1000;
-var h = 1000;
+var w = 600;
+var h = 600;
 
 var xScale = d3.scale.linear()
 											.domain([d3.min(dataset, function(d){ return d[0];}), d3.max(dataset, function(d){ return d[0]; })])
@@ -174,6 +192,11 @@ var yScale = d3.scale.linear()
 											.domain([d3.min(dataset, function(d){ return d[1];}), d3.max(dataset, function(d){ return d[1];})])
 											.range([40, h-40])
 
+var tip = d3.tip()
+  					.attr('class', 'd3-tip')
+  					.html(function(d, i) { return allResponses[i].headline.main; })
+
+
 //First, we need to create the SVG element in which to place all our shapes:
 var svg = d3.select("body")
 						.append("svg")
@@ -181,6 +204,7 @@ var svg = d3.select("body")
 							"width": w,
 							"height": h
 						})
+						.call(tip)
 
 
 svg.selectAll("circle")
@@ -190,29 +214,12 @@ svg.selectAll("circle")
 		.attr({
 			cx: function(d,i){ return xScale(d[0]) },
 			cy: function(d,i){ return yScale(d[1]) },
-			r: 5,
-			stroke: "black",
-			"stroke-width": 1
+			r: 4,
 		})
+		.on('mouseover', tip.show)
+  	.on('mouseout', tip.hide)
+  	.on('click', function(d,i){ window.open(allResponses[i].web_url) })
 
 
-
-
-// /* Initialize tooltip */
-// tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return d[0]; });
-
-// /* Invoke the tip in the context of your visualization */
-// svg.call(tip)
-
-// svg.selectAll('rect')
-//   .data(dataset)
-// .enter().append('rect')
-//   .attr('width', function() { return x.rangeBand() })
-//   .attr('height', function(d) { return h - y(d[0]) })
-//   .attr('y', function(d) { return y(d[0]) })
-//   .attr('x', function(d, i) { return x(i) })
-//   /* Show and hide tip on mouse events */
-//   .on('mouseover', tip.show)
-//   .on('mouseout', tip.hide)
 
 }

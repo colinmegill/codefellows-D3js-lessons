@@ -1,13 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
+	<style type="text/css">
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
 
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  width: 50%;
+}
+
+
+
+#timesApiSearch input {
+	background-color: transparent; 
+border-style: solid; 
+border-width: 0px 0px 1px 0px; 
+border-color: "black";
+width: 50%;
+padding: 20px;
+font-size: 14px;
+font-family: helvetica;
+}
+
+h1, h3 {
+	font-family: helvetica;
+}
+
+</style>
 
 </head>
 <body>
-	
-
+<h1>Search for patterns in NYTimes Articles.</h1>
+<h3>Enter keywords to lookup 90 articles and cluster those with similar keywords.</h3>
+<form id="timesApiSearch" > 
+<input id="timesApiSearchInput" type="text" placeholder="Enter keywords and press return." > 
+</form>
 
 
 
