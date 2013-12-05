@@ -123,6 +123,9 @@ function initializeNeuralNetwork (data) {
 		hiddenLayers: [2]
 	})
 
+		document.write(allResponses)
+
+
 	console.log('- - - - - - - - - - neural network  - - - - - - - - - -')
 	console.dir(neuralNetwork)
 	console.log('- - - - - - - - - - input === output autoencoder feature vectors - - - - - - - - - -')
@@ -155,12 +158,13 @@ function initializeNeuralNetwork (data) {
 	console.dir(runDataSigmoid)
 	console.dir(runDataLinear)
 
-	console.log('- - - - - - - - - - adding article data for d3 hover effects - - - - - - - - - - -')
-
+	console.log('- - - - - - - - - - visualizing... - - - - - - - - - - -')
 
 	visualization(runDataLinear);
 
 }
+
+
 
 
 
@@ -214,11 +218,68 @@ svg.selectAll("circle")
 		.attr({
 			cx: function(d,i){ return xScale(d[0]) },
 			cy: function(d,i){ return yScale(d[1]) },
+			fill: "white",
+			stroke: "#2980b9",
+			// fill: function(d,i) { 
+			// 	value = "rgb(" + (i*2) + ", 0 , " + (250-(i*2)) + ")";
+			// 	return value;
+			// },
+
+/*
+a few steps needed here. we can still use the index of d, i in the lambda. that is good.
+
+1. sort the article indexes by date using their boolean
+2. create a map of these new indexes, as in, var dateIndexForColors = { 37: 0, 42: 1, 14: 2 }
+3. check 
+
+
+function mergeSort(array) {
+    // Recursion base case
+    if(array.length < 2)
+        return array;
+
+    // Split array into two equal sized chunks
+    var mid = Math.floor(array.length / 2),
+        left = array.slice(0, mid),
+        right = array.slice(mid);
+
+    // Sort each chunk using merge sort
+    var leftSorted = mergeSort(left),
+        rightSorted = mergeSort(right);
+
+    // Combine the chucks back into a single array and return it
+    var sortedResult = [];
+    while(leftSorted.length > 0 || rightSorted.length > 0) {
+        if(leftSorted.length == 0) {
+            Array.prototype.splice.apply(sortedResult, [sortedResult.length, 0].concat(rightSorted));
+            break;
+        } else if(rightSorted.length == 0) {
+            console.log(sortedResult);
+            Array.prototype.splice.apply(sortedResult, [sortedResult.length, 0].concat(leftSorted));
+            break;
+        } else {
+            var elem = (leftSorted[0] < rightSorted[0]) ? leftSorted.shift() : rightSorted.shift();
+            sortedResult.push(elem);
+        }
+    }
+    
+    return sortedResult;   
+}
+
+*/
 			r: 4,
 		})
 		.on('mouseover', tip.show)
   	.on('mouseout', tip.hide)
   	.on('click', function(d,i){ window.open(allResponses[i].web_url) })
+
+
+
+
+
+
+
+
 
 
 
