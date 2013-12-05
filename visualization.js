@@ -123,9 +123,6 @@ function initializeNeuralNetwork (data) {
 		hiddenLayers: [2]
 	})
 
-		document.write(allResponses)
-
-
 	console.log('- - - - - - - - - - neural network  - - - - - - - - - -')
 	console.dir(neuralNetwork)
 	console.log('- - - - - - - - - - input === output autoencoder feature vectors - - - - - - - - - -')
@@ -218,7 +215,7 @@ svg.selectAll("circle")
 		.attr({
 			cx: function(d,i){ return xScale(d[0]) },
 			cy: function(d,i){ return yScale(d[1]) },
-			fill: "white",
+			fill: "black",
 			stroke: "#2980b9",
 			// fill: function(d,i) { 
 			// 	value = "rgb(" + (i*2) + ", 0 , " + (250-(i*2)) + ")";
