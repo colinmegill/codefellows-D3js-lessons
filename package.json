@@ -1,0 +1,24 @@
+{
+  "name": "d3lessons",
+  "version": "0.0.0",
+  "description": "codefellows-D3js-lessons ========================",
+  "main": "apicall.js",
+  "dependencies": {
+    "express": "~3.4.5",
+    "underscore": "~1.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/colinmegill/codefellows-D3js-lessons.git"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/colinmegill/codefellows-D3js-lessons/issues"
+  },
+  "homepage": "https://github.com/colinmegill/codefellows-D3js-lessons"
+}
